@@ -1,33 +1,63 @@
 import networkx as nx
-import matplotlib
-import random
+import random 
+import matplotlib.pyplot as plt
+from matplotlib import pylab
+from networkx.drawing.nx_pydot import graphviz_layout
+import matplotlib.pyplot as plt
+import matplotlib.animation as FuncAnimation
 
-"""
-step(tree T, vertex v)
-Takes a tree T (vertices and edges) and the vertex to step from , v.
-Depending on whether the vertex is a root or not, a random number
-[0-2] for non root and [0-1] for vertex, to then take a step.
-Returns a tupple of the modified tree and next vertex.
-"""
 
-def step(T, v):
-    if v == 1 : #is root?
-        next_step = random.randint(0,1) # 1/2 go left, 1/2 go right
-    else:
-        next_step = random.randint(0,2) # 1/3 go left, 1/3 go right, 1/3 go parent
+global T
+T = nx.Graph()
 
-    if next_step == 1: #left
-        pass
+""" Simulate a random walk on the binary tree for N steps. """ 
+def random_walk(N, T): 
+    path = [(0, 0)] # starting point
+    T.add_node(0, rchild = -1, lchild = -1, parent=-2)
+    ctr = 0
+    for _ in range(N): 
+        v = path[-1][-1] # Randomly choose a direction: up, down, left, or right 
+        direction = -1
+        if v == 0: #root
+            direction = random.choice(["rchild", "lchild"])
+        else:
+            direction = random.choice(["rchild", "lchild", "parent"])
 
-def main():
-    T = nx.Graph()
-    T.add_node(1) #root
-    amt_of_steps = 100
-    next_step_v = 1
-    print(T.number_of_nodes())
-    for i in range(0,amt_of_steps):
-        [T, next_step_v] = T, step(T, next_step_v)
-    
-    return 1
+        
+        if nx.get_node_attributes(T, direction)[v] == -1: #dne i.e guaranteed to be not parent
+            ctr += 1
+            T.add_node(ctr, rchild = -1, lchild = -1, parent = v)
+            T.add_edge(v,ctr)
+            path.append((v, ctr))
+        
+        else: #is parent
+            #alter nothing
+            T.add_edge(v, T.nodes[v]["parent"])
+            path.append((v, T.nodes[v]["parent"]))
 
-main()
+    return path 
+
+def animate_nodes(T, ):
+    pos = graphviz_layout(T, prog="dot")
+
+    nodes = nx.draw_networkx_nodes(T, pos)
+    edges = nx.draw_networkx_edges(T, pos)
+    plt.axis('off')
+
+    def update(ii):
+        # nodes are just markers returned by plt.scatter;
+        # node color can hence be changed in the same way like marker colors
+        nodes.set_array(node_colors[ii])
+        return nodes,
+
+    fig = plt.gcf()
+    animation = FuncAnimation(fig, update, interval=50, frames=len(node_colors), blit=True)
+    return animation   
+
+N = 100
+path = random_walk(N, T) 
+print(path)
+#pos = graphviz_layout(T, prog="dot")
+#nx.draw(T, pos, with_labels= True)
+#plt.show()
+ani = animate_nodes(T)
