@@ -58,13 +58,21 @@ print(path)
 if int(sys.argv[1]) == 1:
     print("Saving tree ...")
     pos = graphviz_layout(T, prog="dot")
-    fig = plt.figure()
+    fig = plt.figure(figsize=(16,10))
     nx.draw(T, pos, with_labels= False, ax = fig.add_subplot() ,node_size =5)
-    #plt.show() # Gives a static image
+    plt.tight_layout()
     plt.savefig(f"random_walk_bin_tree_{N}.png")
+    print(f"Saved as \"random_walk_bin_tree_{N}.png\"")
+    plt.show()
 elif int(sys.argv[1]) == 2:
     print("Animating tree ...")
     animate_graph_traversal(T,path) #Animated the thing
+    
+
+else:
+    print(f"Usage: python3 {sys.argv[0]} mode")
+    print("Where mode = 1 is for image")
+    print("Where mdoe = 2 for animation")
 """
 TO DO :
  Add some kind of colored signature as to how early in the walk the node was visited
