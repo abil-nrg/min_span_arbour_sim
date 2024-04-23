@@ -5,6 +5,7 @@ from matplotlib import pylab
 from networkx.drawing.nx_pydot import graphviz_layout
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import sys
 
 
 global T
@@ -50,10 +51,21 @@ def update_animation(frame, graph, pos, traversal_order, ax):
     nx.draw_networkx_nodes(graph, pos, nodelist=[current_node], node_color='r', node_size=10)
     #nx.draw_networkx_labels(graph, pos, labels=None, font_color='w', font_size=3, ax=ax)
 
-N = 500
+N = 1000
 path = random_walk(N, T) 
 print(path)
-pos = graphviz_layout(T, prog="dot")
-nx.draw(T, pos, with_labels= False, node_size =5)
-plt.show()
-#animate_graph_traversal(T,path)
+
+if int(sys.argv[1]) == 1:
+    print("Saving tree ...")
+    pos = graphviz_layout(T, prog="dot")
+    fig = plt.figure()
+    nx.draw(T, pos, with_labels= False, ax = fig.add_subplot() ,node_size =5)
+    #plt.show() # Gives a static image
+    plt.savefig(f"random_walk_bin_tree_{N}.png")
+elif int(sys.argv[1]) == 2:
+    print("Animating tree ...")
+    animate_graph_traversal(T,path) #Animated the thing
+"""
+TO DO :
+ Add some kind of colored signature as to how early in the walk the node was visited
+"""
