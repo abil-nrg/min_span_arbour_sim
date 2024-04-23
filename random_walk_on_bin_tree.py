@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib import pylab
 from networkx.drawing.nx_pydot import graphviz_layout
 import matplotlib.pyplot as plt
-import matplotlib.animation as FuncAnimation
+from matplotlib.animation import FuncAnimation
 
 
 global T
@@ -35,29 +35,25 @@ def random_walk(N, T):
             T.add_edge(v, T.nodes[v]["parent"])
             path.append((v, T.nodes[v]["parent"]))
 
-    return path 
+    return path  
 
-def animate_nodes(T, ):
-    pos = graphviz_layout(T, prog="dot")
+def animate_graph_traversal(graph, traversal_order):
+    pos = graphviz_layout(T, prog="dot")  # Position nodes using spring layout
+    fig, ax = plt.subplots()
+    ani = FuncAnimation(fig, update_animation, frames=len(traversal_order), fargs=(graph, pos, traversal_order, ax), interval=50)
+    plt.show()
 
-    nodes = nx.draw_networkx_nodes(T, pos)
-    edges = nx.draw_networkx_edges(T, pos)
-    plt.axis('off')
+def update_animation(frame, graph, pos, traversal_order, ax):
+    ax.clear()
+    current_node = traversal_order[frame][1]
+    nx.draw(graph, pos, with_labels=False, node_size=10, ax=ax)
+    nx.draw_networkx_nodes(graph, pos, nodelist=[current_node], node_color='r', node_size=10)
+    #nx.draw_networkx_labels(graph, pos, labels=None, font_color='w', font_size=3, ax=ax)
 
-    def update(ii):
-        # nodes are just markers returned by plt.scatter;
-        # node color can hence be changed in the same way like marker colors
-        nodes.set_array(node_colors[ii])
-        return nodes,
-
-    fig = plt.gcf()
-    animation = FuncAnimation(fig, update, interval=50, frames=len(node_colors), blit=True)
-    return animation   
-
-N = 100
+N = 500
 path = random_walk(N, T) 
 print(path)
-#pos = graphviz_layout(T, prog="dot")
-#nx.draw(T, pos, with_labels= True)
-#plt.show()
-ani = animate_nodes(T)
+pos = graphviz_layout(T, prog="dot")
+nx.draw(T, pos, with_labels= False, node_size =5)
+plt.show()
+#animate_graph_traversal(T,path)
