@@ -1,0 +1,11 @@
+digraph "" {
+	1	[isInSuperVertex=True,
+		parent=-1];
+	2	[isInSuperVertex=True,
+		parent=1];
+	1 -> 2	[key=0];
+	2 -> 1	[key=0];
+	3	[isInSuperVertex=False,
+		parent=2];
+	2 -> 3	[key=0];
+}
